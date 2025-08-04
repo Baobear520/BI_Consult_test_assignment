@@ -1,14 +1,11 @@
 """Main ETL process execution script."""
 import logging
-from extractor import FakeStoreAPI
-from transformer import DataTransformer
+from .extractor import FakeStoreAPI
+from .transformer import DataTransformer
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+
 logger = logging.getLogger(__name__)
+
 
 def main():
     """Execute the ETL process."""
@@ -41,6 +38,7 @@ def main():
     except Exception as e:
         logger.error(f"ETL process failed: {str(e)}")
         raise
+
 
 if __name__ == "__main__":
     main()

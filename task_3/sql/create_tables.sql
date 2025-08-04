@@ -17,12 +17,8 @@ CREATE TABLE IF NOT EXISTS products (
 -- Create users table with JSON fields for name and address
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(100) NOT NULL,
-    username VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL,
     name JSONB NOT NULL,
-    address JSONB NOT NULL,
-    phone VARCHAR(50)
+    address JSONB NOT NULL
 );
 
 -- Create most_expensive table for transformed data
@@ -40,6 +36,6 @@ CREATE TABLE IF NOT EXISTS ods_users (
     latitude DECIMAL(10, 6),
     longitude DECIMAL(10, 6),
     street_number VARCHAR(20),
-    street_name VARCHAR(255),
+    street_name VARCHAR(63),
     zipcode VARCHAR(20)
 );

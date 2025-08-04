@@ -1,24 +1,28 @@
 """Data transformation module."""
+
 import os
 import json
 import logging
 from typing import List, Dict, Any
-from database import DatabaseConnection, execute_sql_file
+from .database import DatabaseConnection, execute_sql_file
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class DataTransformer:
     """Handle data transformations and database operations."""
-    
+
     def __init__(self):
         """Initialize transformer with SQL scripts directory path."""
-        self.sql_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sql')
+        self.sql_dir = os.path.join(os.path.dirname(
+            os.path.dirname(__file__)), "sql"
+        )
 
     def create_tables(self) -> None:
         """Create database tables."""
-        sql_file = os.path.join(self.sql_dir, 'create_tables.sql')
+        sql_file = os.path.join(self.sql_dir, "create_tables.sql")
         with DatabaseConnection() as cursor:
             execute_sql_file(cursor, sql_file)
             logger.info("Database tables created successfully")
@@ -35,21 +39,33 @@ class DataTransformer:
                     ) VALUES (
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
+                    ON CONFLICT (id) DO UPDATE SET
+                        title = EXCLUDED.title,
+                        price = EXCLUDED.price,
+                        description = EXCLUDED.description,
+                        image = EXCLUDED.image,
+                        brand = EXCLUDED.brand,
+                        model = EXCLUDED.model,
+                        color = EXCLUDED.color,
+                        category = EXCLUDED.category,
+                        popular = EXCLUDED.popular,
+                        discount = EXCLUDED.discount,
+                        on_sale = EXCLUDED.on_sale
                     """,
                     (
-                        product['id'],
-                        product['title'],
-                        product['price'],
-                        product.get('description'),
-                        product.get('image'),
-                        product.get('brand'),
-                        product.get('model'),
-                        product.get('color'),
-                        product.get('category'),
-                        product.get('popular', False),
-                        product.get('discount'),
-                        product.get('onSale', False)
-                    )
+                        product["id"],
+                        product["title"],
+                        product["price"],
+                        product.get("description"),
+                        product.get("image"),
+                        product.get("brand"),
+                        product.get("model"),
+                        product.get("color"),
+                        product.get("category"),
+                        product.get("popular", False),
+                        product.get("discount"),
+                        product.get("onSale", False),
+                    ),
                 )
             logger.info(f"Loaded {len(products)} products into database")
 
@@ -60,33 +76,31 @@ class DataTransformer:
                 cursor.execute(
                     """
                     INSERT INTO users (
-                        id, email, username, password, name, address, phone
+                        id, name, address
                     ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s
-                    )
+                        %s, %s, %s
+                    ) ON CONFLICT (id) DO UPDATE SET
+                        name = EXCLUDED.name,
+                        address = EXCLUDED.address
                     """,
                     (
-                        user['id'],
-                        user['email'],
-                        user['username'],
-                        user['password'],
-                        json.dumps(user['name']),
-                        json.dumps(user['address']),
-                        user.get('phone')
-                    )
+                        user["id"],
+                        json.dumps(user["name"]),
+                        json.dumps(user["address"]),
+                    ),
                 )
             logger.info(f"Loaded {len(users)} users into database")
 
     def transform_most_expensive(self) -> None:
         """Transform and load most expensive products."""
-        sql_file = os.path.join(self.sql_dir, 'transform_most_expensive.sql')
+        sql_file = os.path.join(self.sql_dir, "transform_most_expensive.sql")
         with DatabaseConnection() as cursor:
             execute_sql_file(cursor, sql_file)
             logger.info("Most expensive products transformed successfully")
 
     def transform_users(self) -> None:
         """Transform and load normalized user data."""
-        sql_file = os.path.join(self.sql_dir, 'transform_ods_users.sql')
+        sql_file = os.path.join(self.sql_dir, "transform_ods_users.sql")
         with DatabaseConnection() as cursor:
             execute_sql_file(cursor, sql_file)
             logger.info("User data transformed successfully")
