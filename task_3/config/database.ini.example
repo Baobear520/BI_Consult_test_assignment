@@ -1,6 +1,0 @@
-[postgresql]
-host=localhost
-database=sales_etl
-user=your_username
-password=your_password
-port=5432
