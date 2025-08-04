@@ -1,5 +1,6 @@
 """Data transformation module."""
 import os
+import json
 import logging
 from typing import List, Dict, Any
 from database import DatabaseConnection, execute_sql_file
@@ -28,15 +29,26 @@ class DataTransformer:
             for product in products:
                 cursor.execute(
                     """
-                    INSERT INTO products (title, price, description, category, image)
-                    VALUES (%s, %s, %s, %s, %s)
+                    INSERT INTO products (
+                        id, title, price, description, image, brand, model,
+                        color, category, popular, discount, on_sale
+                    ) VALUES (
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    )
                     """,
                     (
+                        product['id'],
                         product['title'],
                         product['price'],
-                        product['description'],
-                        product['category'],
-                        product['image']
+                        product.get('description'),
+                        product.get('image'),
+                        product.get('brand'),
+                        product.get('model'),
+                        product.get('color'),
+                        product.get('category'),
+                        product.get('popular', False),
+                        product.get('discount'),
+                        product.get('onSale', False)
                     )
                 )
             logger.info(f"Loaded {len(products)} products into database")
@@ -47,12 +59,20 @@ class DataTransformer:
             for user in users:
                 cursor.execute(
                     """
-                    INSERT INTO users (name, address)
-                    VALUES (%s, %s)
+                    INSERT INTO users (
+                        id, email, username, password, name, address, phone
+                    ) VALUES (
+                        %s, %s, %s, %s, %s, %s, %s
+                    )
                     """,
                     (
-                        user['name'],
-                        user['address']
+                        user['id'],
+                        user['email'],
+                        user['username'],
+                        user['password'],
+                        json.dumps(user['name']),
+                        json.dumps(user['address']),
+                        user.get('phone')
                     )
                 )
             logger.info(f"Loaded {len(users)} users into database")

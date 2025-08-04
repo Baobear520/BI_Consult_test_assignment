@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class FakeStoreAPI:
     """FakeStore API client."""
     
-    BASE_URL = "https://fakestoreapi.in"
+    BASE_URL = "https://fakestoreapi.in/api"
     
     @staticmethod
     def _make_request(endpoint: str) -> Dict[str, Any]:
@@ -27,7 +27,11 @@ class FakeStoreAPI:
     def get_products(cls) -> List[Dict[str, Any]]:
         """Fetch products data from the API."""
         try:
-            products = cls._make_request("/products")
+            response = cls._make_request("/products")
+            if response["status"] != "SUCCESS":
+                raise ValueError(f"API returned error status: {response['status']}")
+            
+            products = response["products"]
             logger.info(f"Successfully fetched {len(products)} products")
             return products
         except Exception as e:
@@ -38,7 +42,11 @@ class FakeStoreAPI:
     def get_users(cls) -> List[Dict[str, Any]]:
         """Fetch users data from the API."""
         try:
-            users = cls._make_request("/users")
+            response = cls._make_request("/users")
+            if response["status"] != "SUCCESS":
+                raise ValueError(f"API returned error status: {response['status']}")
+            
+            users = response["users"]
             logger.info(f"Successfully fetched {len(users)} users")
             return users
         except Exception as e:
