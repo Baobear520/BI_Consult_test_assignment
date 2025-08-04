@@ -13,8 +13,8 @@ INSERT INTO ods_users (
 SELECT 
     name->>'firstname' as firstname,
     name->>'lastname' as lastname,
-    (address->>'lat')::DECIMAL as latitude,
-    (address->>'long')::DECIMAL as longitude,
+    (address->'geolocation'->>'lat')::DECIMAL as latitude,
+    (address->'geolocation'->>'long')::DECIMAL as longitude,
     address->>'number' as street_number,
     address->>'street' as street_name,
     address->>'zipcode' as zipcode
