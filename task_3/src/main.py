@@ -31,8 +31,8 @@ def main():
 
         # Transform data
         logger.info("Transforming data...")
-        transformer.transform_most_expensive(sql_file="transform_most_expensive.sql")
-        transformer.transform_ods_users(sql_file="transform_ods_users.sql")
+        transformer.transform_data(sql_file="transform_most_expensive.sql")
+        transformer.transform_data(sql_file="transform_ods_users.sql")
 
         logger.info("ETL process completed successfully")
 

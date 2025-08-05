@@ -85,17 +85,12 @@ class FakeStoreDataTransformer(SQLDataTransformer):
         self.db_driver.execute_sql_file_many(sql_file, prepared_data)
         logger.info(f"Loaded {len(data)} users successfully")
     
-    def transform_most_expensive(self, sql_file: str):
-        """Transform most expensive products."""
+    def transform_data(self, sql_file: str):
+        """Transform data."""
         sql_file = self._get_sql_path(sql_file)
         self.db_driver.execute_sql_file(sql_file)
-        logger.info("Most expensive products transformed successfully")
-    
-    def transform_ods_users(self, sql_file: str):
-        """Transform ODS users."""
-        sql_file = self._get_sql_path(sql_file)
-        self.db_driver.execute_sql_file(sql_file)
-        logger.info("ODS users transformed successfully")
+        logger.info("Data transformed successfully")
+
 
     
     

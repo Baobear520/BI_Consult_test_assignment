@@ -1,6 +1,12 @@
 import logging
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv(
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", ".env"),
+    override=True,
+)
 
 # database settings
 DB_HOST = os.getenv("DB_HOST", "localhost")
