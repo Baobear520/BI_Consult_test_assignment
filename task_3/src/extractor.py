@@ -1,10 +1,13 @@
 """Data extraction module for FakeStore API."""
 
+from abc import ABC, abstractmethod
 import os
 import requests
 from typing import Dict, List, Any
 import logging
 from dotenv import load_dotenv
+
+from ..config.settings import API_BASE_URL, API_TIMEOUT, API_RETRY_ATTEMPTS
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -17,21 +20,37 @@ load_dotenv(
 )
 
 
-class FakeStoreAPI:
+class APIClient(ABC):
+    """Base API class."""
+
+    def __init__(self, session: requests.Session, base_url: str, timeout: int, retry_attempts: int):
+        self.base_url = base_url
+        self.timeout = timeout
+        self.retry_attempts = retry_attempts
+        self.session = session
+
+    @abstractmethod
+    def _make_request(self, endpoint: str):
+        pass
+
+            
+
+class FakeStoreAPI(APIClient):
     """FakeStore API client."""
 
-    def __init__(self):
-        """Initialize and configure API client."""
+    ENDPOINTS = {
+        "users": "/users",
+        "products": "/products"
+    }
 
-        self.base_url = os.getenv("API_BASE_URL", "https://fakestoreapi.in/api")
-        self.timeout = int(os.getenv("API_TIMEOUT", "5"))
-        self.retry_attempts = int(os.getenv("API_RETRY_ATTEMPTS", "3"))
+    def __init__(self, session: requests.Session = requests.Session):
+        super().__init__(session, API_BASE_URL, API_TIMEOUT, API_RETRY_ATTEMPTS)
 
     def _make_request(self, endpoint: str) -> Dict[str, Any]:
         """Make HTTP request to the API."""
         for attempt in range(self.retry_attempts):
             try:
-                response = requests.get(
+                response = self.session().get(
                     f"{self.base_url}{endpoint}", timeout=self.timeout
                 )
                 response.raise_for_status()
@@ -50,32 +69,20 @@ class FakeStoreAPI:
                     f"API request attempt {attempt + 1} failed, retrying..."
                 )
 
-    def get_products(self) -> List[Dict[str, Any]]:
-        """Fetch products data from the API."""
-        try:
-            response = self._make_request("/products")
-            if response["status"] != "SUCCESS":
-                raise ValueError(
-                    f"API returned error status: {response['status']}"
-                )
-
-            products = response["products"]
-            logger.info(f"Successfully fetched {len(products)} products")
-            return products
-        except Exception as e:
-            logger.error(f"Failed to fetch products: {str(e)}")
-            raise
-
-    def get_users(self) -> List[Dict[str, Any]]:
+    def fetch_data(self, category: str) -> List[Dict[str, Any]]:
         """Fetch users data from the API."""
         try:
-            response = self._make_request("/users")
+            if category not in self.ENDPOINTS:
+                raise ValueError(f"Invalid category: {category}")
+
+            response = self._make_request(self.ENDPOINTS[category])
             if response["status"] != "SUCCESS":
                 raise ValueError(f"API returned error status: {response['status']}")
 
-            users = response["users"]
-            logger.info(f"Successfully fetched {len(users)} users")
-            return users
+            data = response[category]
+            logger.info(f"Successfully fetched {len(data)} {category} data")
+            return data
         except Exception as e:
-            logger.error(f"Failed to fetch users: {str(e)}")
+            logger.error(f"Failed to fetch {category} data: {str(e)}")
             raise
+                
