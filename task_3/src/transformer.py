@@ -6,7 +6,7 @@ import os
 
 import logging
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 
 from .database import DatabaseDriver
@@ -37,11 +37,16 @@ class FakeStoreDataTransformer(SQLDataTransformer):
     def __init__(self, db_driver: DatabaseDriver):
         super().__init__(db_driver)
     
-    def create_tables(self, sql_file: str):
-        """Create database tables."""
+    def run_sql_file(
+        self, 
+        sql_file: str, 
+        many: bool = False, 
+        params: Optional[List[Dict[str, Any]] | Dict[str, Any]] = None
+    ):
+        """Run SQL file."""
         sql_file = self._get_sql_path(sql_file)
-        self.db_driver.execute_sql_file(sql_file)
-        logger.info("Database tables created successfully")
+        self.db_driver.execute_sql_file(sql_file, many, params)
+        logger.info("Running SQL file %s completed", sql_file)
     
     
     def load_products(self, sql_file: str, data: List[Dict[str, Any]]):
@@ -65,9 +70,8 @@ class FakeStoreDataTransformer(SQLDataTransformer):
             for product in data
         ]
         
-        sql_file = self._get_sql_path(sql_file)
-        self.db_driver.execute_sql_file_many(sql_file, prepared_data)
-        logger.info(f"Loaded {len(data)} products successfully")
+        self.run_sql_file(sql_file, many=True, params=prepared_data)
+        logger.info("Loaded %s products successfully", len(data))
 
     def load_users(self, sql_file: str, data: List[Dict[str, Any]]):
         """Load users into the database."""
@@ -81,15 +85,10 @@ class FakeStoreDataTransformer(SQLDataTransformer):
             for user in data
         ]
         
-        sql_file = self._get_sql_path(sql_file)
-        self.db_driver.execute_sql_file_many(sql_file, prepared_data)
-        logger.info(f"Loaded {len(data)} users successfully")
+        self.run_sql_file(sql_file, many=True, params=prepared_data)
+        logger.info("Loaded %s users successfully", len(data))
     
-    def transform_data(self, sql_file: str):
-        """Transform data."""
-        sql_file = self._get_sql_path(sql_file)
-        self.db_driver.execute_sql_file(sql_file)
-        logger.info("Data transformed successfully")
+
 
 
     
