@@ -5,10 +5,10 @@ CREATE TABLE IF NOT EXISTS products (
     price DECIMAL(10, 2) NOT NULL,
     description TEXT,
     image VARCHAR(255),
-    brand VARCHAR(100),
-    model VARCHAR(100),
-    color VARCHAR(50),
-    category VARCHAR(100),
+    brand VARCHAR(63),
+    model VARCHAR(255),
+    color VARCHAR(63),
+    category VARCHAR(63),
     popular BOOLEAN DEFAULT FALSE,
     discount INTEGER,
     on_sale BOOLEAN DEFAULT FALSE,
@@ -30,20 +30,20 @@ CREATE TABLE IF NOT EXISTS most_expensive (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    category VARCHAR(100),
+    category VARCHAR(63),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create ods_users table for transformed user data
 CREATE TABLE IF NOT EXISTS ods_users (
     id SERIAL PRIMARY KEY,
-    firstname VARCHAR(100),
-    lastname VARCHAR(100),
+    firstname VARCHAR(63),
+    lastname VARCHAR(63),
     latitude DECIMAL(10, 6),
     longitude DECIMAL(10, 6),
-    street_number VARCHAR(20),
+    street_number VARCHAR(31),
     street_name VARCHAR(63),
-    zipcode VARCHAR(20),
+    zipcode VARCHAR(31),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -51,6 +51,3 @@ CREATE TABLE IF NOT EXISTS ods_users (
 -- Products index for price sorting
 CREATE INDEX IF NOT EXISTS idx_products_price ON products(price DESC);
 
--- Users indexes for JSON field lookups
-CREATE INDEX IF NOT EXISTS idx_users_name ON users USING GIN (name);
-CREATE INDEX IF NOT EXISTS idx_users_address ON users USING GIN (address);

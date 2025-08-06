@@ -1,24 +1,16 @@
 """Data extraction module for FakeStore API."""
 
 from abc import ABC, abstractmethod
-import os
 import requests
 from typing import Dict, List, Any
 import logging
-from dotenv import load_dotenv
 
-from ..config.settings import API_BASE_URL, API_TIMEOUT, API_RETRY_ATTEMPTS
+
+from ..config.settings import API_CONFIG
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Load environment variables
-load_dotenv(
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", ".env"),
-    override=True,
-)
-
 
 class APIClient(ABC):
     """Base API class."""
@@ -33,8 +25,6 @@ class APIClient(ABC):
     def _make_request(self, endpoint: str):
         pass
 
-            
-
 class FakeStoreAPI(APIClient):
     """FakeStore API client."""
 
@@ -44,7 +34,7 @@ class FakeStoreAPI(APIClient):
     }
 
     def __init__(self, session: requests.Session = requests.Session):
-        super().__init__(session, API_BASE_URL, API_TIMEOUT, API_RETRY_ATTEMPTS)
+        super().__init__(session, **API_CONFIG)
 
     def _make_request(self, endpoint: str) -> Dict[str, Any]:
         """Make HTTP request to the API."""
