@@ -1,13 +1,12 @@
 """Database connection and operations module."""
 
-from abc import abstractmethod
-from typing import List
-import os
+from typing import Dict, Any, Optional, List
+import logging
 
 import psycopg2
-from typing import Dict, Any, Optional
-import logging
-from ..config.settings import DB_CONFIG
+
+from task_3.config.utils import check_db_config
+from task_3.src.interfaces import DatabaseDriver
 
 
 # Configure logging
@@ -15,43 +14,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class DatabaseDriver:
-    """Database connection context manager."""
-
-    def __init__(self):
-        """Initialize database connection parameters."""
-        self.config = self.__check_db_config()
-        self.conn = None
-        self.cur = None
-    
-    def __check_db_config(self) -> Dict[str, Any]:
-        """Load database connection parameters from environment variables."""
-        required_params = ("host", "port", "dbname", "user", "password")
-        missing_params = [
-            param for param in required_params if param not in DB_CONFIG
-        ]
-        if missing_params:
-            raise ValueError(
-                f"Missing required database parameters: {', '.join(missing_params)}"
-                f"Please check your environment variables."
-            )
-
-        return DB_CONFIG
-
-    @abstractmethod
-    def __enter__(self):
-        pass
-
-    @abstractmethod
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-
 class PostgresDriver(DatabaseDriver):
     """Database connection context manager."""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config: Dict[str, Any] = check_db_config()):
+        super().__init__(config)
 
     def __get_connection(self):
         """Get database connection."""

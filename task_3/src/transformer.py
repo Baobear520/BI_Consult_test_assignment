@@ -1,35 +1,16 @@
 """Data transformation module."""
 
-from abc import ABC
 import json
-import os
-
 import logging
-
 from typing import List, Dict, Any, Optional
 
-
-from .database import DatabaseDriver
+from task_3.src.interfaces import SQLDataTransformer
+from task_3.src.interfaces import DatabaseDriver
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-class SQLDataTransformer(ABC):
-    """Handle data transformations and database operations."""
-
-    def __init__(self, db_driver: DatabaseDriver):
-        """Initialize transformer with SQL scripts directory path."""
-        self.sql_dir = os.path.join(os.path.dirname(
-            os.path.dirname(__file__)), "sql"
-        )
-        self.db_driver = db_driver
-    
-    def _get_sql_path(self, filename: str) -> str:
-        """Get full path to SQL file."""
-        return os.path.join(self.sql_dir, filename)
-    
 
 class FakeStoreDataTransformer(SQLDataTransformer):
     """Handle data transformations and database operations."""

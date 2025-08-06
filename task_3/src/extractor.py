@@ -1,29 +1,16 @@
 """Data extraction module for FakeStore API."""
 
-from abc import ABC, abstractmethod
 import requests
 from typing import Dict, List, Any
 import logging
 
-
-from ..config.settings import API_CONFIG
+from task_3.src.interfaces import APIClient
+from task_3.config.settings import API_CONFIG
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class APIClient(ABC):
-    """Base API class."""
-
-    def __init__(self, session: requests.Session, base_url: str, timeout: int, retry_attempts: int):
-        self.base_url = base_url
-        self.timeout = timeout
-        self.retry_attempts = retry_attempts
-        self.session = session
-
-    @abstractmethod
-    def _make_request(self, endpoint: str):
-        pass
 
 class FakeStoreAPI(APIClient):
     """FakeStore API client."""
