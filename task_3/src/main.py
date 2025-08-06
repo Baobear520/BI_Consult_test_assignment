@@ -10,7 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 class FakeStoreETLProcess(ETLProcess):
-    def __init__(self, api_client: FakeStoreAPI, db_driver: PostgresDriver, transformer: FakeStoreDataTransformer):
+    def __init__(
+        self, 
+        api_client: FakeStoreAPI, 
+        db_driver: PostgresDriver, 
+        transformer: FakeStoreDataTransformer
+    ):
         super().__init__(api_client, db_driver, transformer)
 
     def prepare(self):

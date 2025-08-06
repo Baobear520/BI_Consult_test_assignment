@@ -23,12 +23,14 @@ class FakeStoreAPI(APIClient):
     def __init__(self, session: requests.Session = requests.Session):
         super().__init__(session, **API_CONFIG)
 
-    def _make_request(self, endpoint: str) -> Dict[str, Any]:
+    def _make_request(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """Make HTTP request to the API."""
         for attempt in range(self.retry_attempts):
             try:
                 response = self.session().get(
-                    f"{self.base_url}{endpoint}", timeout=self.timeout
+                    f"{self.base_url}{endpoint}",
+                    timeout=self.timeout, 
+                    params=params
                 )
                 response.raise_for_status()
                 return response.json()
